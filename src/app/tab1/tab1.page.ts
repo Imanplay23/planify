@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import {
   IonHeader,
@@ -33,12 +33,12 @@ import { ActivityModalComponent } from './activity-modal.component';
   ],
 })
 export class Tab1Page implements OnInit {
+  private dataService = inject(DataService);
+  private modalCtrl = inject(ModalController);
+
   activities$!: Observable<Activity[]>;
 
-  constructor(
-    private dataService: DataService,
-    private modalCtrl: ModalController
-  ) {
+  constructor() {
     addIcons({ add, notificationsOutline, calendarOutline });
   }
 
