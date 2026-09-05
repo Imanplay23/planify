@@ -1,0 +1,86 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" color="medium">
+        Cancelar
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Nueva Actividad</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="save()" [disabled]="activityForm.invalid || isLoading" [strong]="true" color="primary">
+        @if (isLoading) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Guardar
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="activityForm" (ngSubmit)="save()">
+    <ion-list lines="none">
+      <!-- Título -->
+      <ion-item class="form-item">
+        <ion-input
+          label="Título *"
+          labelPlacement="stacked"
+          placeholder="Ej: Reunión con cliente"
+          formControlName="title"
+          [clearInput]="true"
+        ></ion-input>
+      </ion-item>
+
+      <!-- Fecha -->
+      <ion-item class="form-item">
+        <ion-input
+          label="Fecha *"
+          labelPlacement="stacked"
+          type="date"
+          formControlName="date"
+        ></ion-input>
+      </ion-item>
+
+      <!-- Horas de Inicio y Fin -->
+      <div class="time-row">
+        <ion-item class="form-item time-item">
+          <ion-input
+            label="Hora de inicio *"
+            labelPlacement="stacked"
+            type="time"
+            formControlName="startTime"
+          ></ion-input>
+        </ion-item>
+
+        <ion-item class="form-item time-item">
+          <ion-input
+            label="Hora de fin *"
+            labelPlacement="stacked"
+            type="time"
+            formControlName="endTime"
+          ></ion-input>
+        </ion-item>
+      </div>
+
+      <!-- Descripción -->
+      <ion-item class="form-item">
+        <ion-textarea
+          label="Descripción (opcional)"
+          labelPlacement="stacked"
+          placeholder="Notas o detalles adicionales..."
+          formControlName="description"
+          [autoGrow]="true"
+          rows="3"
+        ></ion-textarea>
+      </ion-item>
+
+      <!-- Alerta / Notificación -->
+      <ion-item class="form-item toggle-item">
+        <ion-toggle formControlName="hasAlert" justify="space-between">
+          Activar recordatorio / alerta
+        </ion-toggle>
+      </ion-item>
+    </ion-list>
+  </form>
+</ion-content>

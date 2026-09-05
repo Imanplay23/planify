@@ -12,7 +12,7 @@
   </ion-header>
 
   <div class="timeline-container">
-    @for (activity of activities; track activity.id) {
+    @for (activity of (activities$ | async); track activity.id) {
       <div class="timeline-item">
         <!-- Rango de horas a la izquierda -->
         <div class="timeline-time">
@@ -42,12 +42,18 @@
           <p class="activity-description">{{ activity.description }}</p>
         </div>
       </div>
+    } @empty {
+      <div class="empty-timeline">
+        <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+        <p class="empty-title">No hay actividades registradas</p>
+        <p class="empty-subtitle">Presiona el botón + para agregar tu primera actividad</p>
+      </div>
     }
   </div>
 
   <!-- Botón flotante para agregar actividad -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
-    <ion-fab-button color="primary" aria-label="Agregar actividad">
+    <ion-fab-button color="primary" (click)="openModal()" aria-label="Agregar actividad">
       <ion-icon name="add"></ion-icon>
     </ion-fab-button>
   </ion-fab>

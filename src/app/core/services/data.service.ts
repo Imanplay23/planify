@@ -8,9 +8,12 @@ import {
   addDoc,
   updateDoc,
   deleteDoc,
-  DocumentReference
+  DocumentReference,
+  query,
+  orderBy
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Activity } from '../models/activity.model';
 import { Task } from '../models/task.model';
 
@@ -26,10 +29,19 @@ export class DataService {
   // ==================== ACTIVITIES CRUD ====================
 
   /**
-   * Obtiene todas las actividades en tiempo real.
+   * Obtiene todas las actividades en tiempo real ordenadas por hora de inicio.
    */
   getActivities(): Observable<Activity[]> {
-    return collectionData(this.activitiesCollection, { idField: 'id' }) as Observable<Activity[]>;
+    const activitiesQuery = query(this.activitiesCollection, orderBy('startTime', 'asc'));
+    return (collectionData(activitiesQuery, { idField: 'id' }) as Observable<Activity[]>).pipe(
+      map(activities =>
+        [...activities].sort((a, b) => {
+          const dateComp = (a.date || '').localeCompare(b.date || '');
+          if (dateComp !== 0) return dateComp;
+          return (a.startTime || '').localeCompare(b.startTime || '');
+        })
+      )
+    );
   }
 
   /**

@@ -1,0 +1,30 @@
+.form-item {
+  --background: var(--ion-item-background, var(--ion-card-background, #ffffff));
+  --border-radius: 12px;
+  --padding-start: 14px;
+  --padding-end: 14px;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  margin-bottom: 14px;
+  border: 1px solid var(--ion-color-step-100, rgba(0, 0, 0, 0.06));
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.time-row {
+  display: flex;
+  gap: 12px;
+
+  .time-item {
+    flex: 1;
+  }
+}
+
+.toggle-item {
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+}
+
+ion-spinner {
+  width: 20px;
+  height: 20px;
+}
