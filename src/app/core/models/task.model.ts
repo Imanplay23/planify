@@ -4,4 +4,5 @@ export interface Task {
   isCompleted: boolean;
   dueDate?: string;
   listId?: string;
+  createdAt?: string;
 }

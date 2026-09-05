@@ -1,17 +1,69 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 2
-    </ion-title>
+    <ion-title>Tareas Pendientes</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" class="ion-padding">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 2</ion-title>
+      <ion-title size="large">Tareas Pendientes</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 2 page"></app-explore-container>
+  <!-- Campo rápido para agregar nueva tarea -->
+  <div class="add-task-container">
+    <ion-item class="add-task-item" lines="none">
+      <ion-input
+        placeholder="Escribe una nueva tarea..."
+        [(ngModel)]="newTaskTitle"
+        (keyup.enter)="addNewTask()"
+        [clearInput]="true"
+        aria-label="Nueva tarea"
+      ></ion-input>
+      <ion-button
+        slot="end"
+        (click)="addNewTask()"
+        [disabled]="!newTaskTitle.trim()"
+        color="primary"
+        aria-label="Agregar tarea"
+      >
+        <ion-icon slot="icon-only" name="add"></ion-icon>
+      </ion-button>
+    </ion-item>
+  </div>
+
+  <!-- Lista de tareas -->
+  <ion-list lines="none" class="task-list">
+    @for (task of (tasks$ | async); track task.id) {
+      <ion-item class="task-item">
+        <ion-checkbox
+          slot="start"
+          [checked]="task.isCompleted"
+          (ionChange)="toggleCompletion(task)"
+          aria-label="Marcar como completada"
+        ></ion-checkbox>
+
+        <ion-label [class.completed-task]="task.isCompleted" class="task-title">
+          {{ task.title }}
+        </ion-label>
+
+        <ion-button
+          slot="end"
+          fill="clear"
+          color="danger"
+          (click)="deleteTask(task.id)"
+          aria-label="Eliminar tarea"
+        >
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        </ion-button>
+      </ion-item>
+    } @empty {
+      <div class="empty-tasks">
+        <ion-icon name="checkmark-done-outline" class="empty-icon"></ion-icon>
+        <p class="empty-title">¡Todo al día!</p>
+        <p class="empty-subtitle">No tienes tareas pendientes por realizar</p>
+      </div>
+    }
+  </ion-list>
 </ion-content>

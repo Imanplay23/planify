@@ -87,10 +87,16 @@ export class DataService {
   // ==================== TASKS CRUD ====================
 
   /**
-   * Obtiene todas las tareas en tiempo real.
+   * Obtiene todas las tareas en tiempo real ordenadas por fecha de creación (más recientes primero).
    */
   getTasks(): Observable<Task[]> {
-    return collectionData(this.tasksCollection, { idField: 'id' }) as Observable<Task[]>;
+    return (collectionData(this.tasksCollection, { idField: 'id' }) as Observable<Task[]>).pipe(
+      map(tasks =>
+        [...tasks].sort((a, b) =>
+          (b.createdAt || '').localeCompare(a.createdAt || '')
+        )
+      )
+    );
   }
 
   /**
@@ -102,18 +108,26 @@ export class DataService {
   }
 
   /**
-   * Agrega una nueva tarea a Firestore.
+   * Agrega una nueva tarea a Firestore con fecha de creación automática si no se provee.
    */
-  addTask(task: Omit<Task, 'id'>): Promise<DocumentReference> {
-    return addDoc(this.tasksCollection, task);
+  addTask(task: Omit<Task, 'id'> | Task): Promise<DocumentReference> {
+    const taskData: Omit<Task, 'id'> = {
+      title: task.title,
+      isCompleted: Boolean(task.isCompleted),
+      createdAt: task.createdAt || new Date().toISOString()
+    };
+    if (task.dueDate) taskData.dueDate = task.dueDate;
+    if (task.listId) taskData.listId = task.listId;
+
+    return addDoc(this.tasksCollection, taskData);
   }
 
   /**
-   * Actualiza una tarea existente.
+   * Actualiza una tarea existente (ej. alternar isCompleted o editar título).
    */
-  updateTask(id: string, task: Partial<Task>): Promise<void> {
+  updateTask(id: string, data: any): Promise<void> {
     const taskDocRef = doc(this.firestore, `tasks/${id}`);
-    const dataToUpdate = { ...task };
+    const dataToUpdate = { ...data };
     delete dataToUpdate.id;
     return updateDoc(taskDocRef, dataToUpdate as { [x: string]: any });
   }
