@@ -16,6 +16,8 @@ import {
   ModalController
 } from '@ionic/angular';
 import { DataService } from '../core/services/data.service';
+import { NotificationService } from '../core/services/notification.service';
+import { Activity } from '../core/models/activity.model';
 
 @Component({
   selector: 'app-activity-modal',
@@ -41,11 +43,15 @@ export class ActivityModalComponent implements OnInit {
   private fb = inject(FormBuilder);
   private modalCtrl = inject(ModalController);
   private dataService = inject(DataService);
+  private notificationService = inject(NotificationService);
 
   activityForm!: FormGroup;
   isLoading = false;
 
   ngOnInit() {
+    // Solicitar permisos de notificación local al abrir el modal
+    this.notificationService.requestPermissions();
+
     const today = new Date().toISOString().split('T')[0];
     this.activityForm = this.fb.group({
       title: ['', [Validators.required]],
@@ -77,7 +83,14 @@ export class ActivityModalComponent implements OnInit {
       };
 
       const docRef = await this.dataService.addActivity(newActivity);
-      await this.modalCtrl.dismiss({ id: docRef.id, ...newActivity }, 'created');
+      const savedActivity: Activity = { id: docRef.id, ...newActivity };
+
+      // Si la alerta está activada, programar la notificación local
+      if (savedActivity.hasAlert) {
+        await this.notificationService.scheduleActivityNotification(savedActivity);
+      }
+
+      await this.modalCtrl.dismiss(savedActivity, 'created');
     } catch (error) {
       console.error('Error al guardar la actividad en Firestore:', error);
     } finally {

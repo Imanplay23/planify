@@ -1,17 +1,45 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+    <ion-title>Ajustes</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
+      <ion-title size="large">Ajustes</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <app-explore-container name="Tab 3 page"></app-explore-container>
+  <ion-list inset="true" class="settings-list">
+    <ion-list-header>
+      <ion-label>Apariencia</ion-label>
+    </ion-list-header>
+
+    <ion-item>
+      <ion-label>
+        <h2>Modo Oscuro</h2>
+        <ion-note>Activa el tema oscuro en toda la app</ion-note>
+      </ion-label>
+      <ion-toggle
+        slot="end"
+        [(ngModel)]="darkMode"
+        (ionChange)="toggleDarkMode(darkMode)"
+        aria-label="Activar modo oscuro"
+      ></ion-toggle>
+    </ion-item>
+  </ion-list>
+
+  <ion-list inset="true" class="settings-list">
+    <ion-list-header>
+      <ion-label>Acerca de</ion-label>
+    </ion-list-header>
+    <ion-item>
+      <ion-label>
+        <h2>Planify</h2>
+        <ion-note>Versión 1.0.0</ion-note>
+      </ion-label>
+    </ion-item>
+  </ion-list>
 </ion-content>
+
