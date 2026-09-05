@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -13,7 +13,7 @@ import {
   orderBy
 } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, tap } from 'rxjs/operators';
 import { Activity } from '../models/activity.model';
 import { Task } from '../models/task.model';
 
@@ -21,10 +21,16 @@ import { Task } from '../models/task.model';
   providedIn: 'root'
 })
 export class DataService {
-  private firestore: Firestore = inject(Firestore);
+  // eslint-disable-next-line @angular-eslint/prefer-inject
+  constructor(private firestore: Firestore) {}
 
-  private activitiesCollection = collection(this.firestore, 'activities');
-  private tasksCollection = collection(this.firestore, 'tasks');
+  private get activitiesCollection() {
+    return collection(this.firestore, 'activities');
+  }
+
+  private get tasksCollection() {
+    return collection(this.firestore, 'tasks');
+  }
 
   // ==================== ACTIVITIES CRUD ====================
 
@@ -34,6 +40,7 @@ export class DataService {
   getActivities(): Observable<Activity[]> {
     const activitiesQuery = query(this.activitiesCollection, orderBy('startTime', 'asc'));
     return (collectionData(activitiesQuery, { idField: 'id' }) as Observable<Activity[]>).pipe(
+      tap((data) => console.log('Datos de Firestore:', data)),
       map(activities =>
         [...activities].sort((a, b) => {
           const dateComp = (a.date || '').localeCompare(b.date || '');
