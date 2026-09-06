@@ -12,19 +12,23 @@ import {
   IonButton,
   IonIcon,
   IonCheckbox,
-  IonLabel
+  IonLabel,
+  NavController
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { add, trashOutline, checkmarkDoneOutline } from 'ionicons/icons';
+import { add, trashOutline, checkmarkDoneOutline, settingsOutline } from 'ionicons/icons';
 import { Observable } from 'rxjs';
 import { Task } from '../core/models/task.model';
 import { DataService } from '../core/services/data.service';
+import { IonButtons } from "@ionic/angular";
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
-  imports: [
+  standalone: true,
+  imports: [IonButtons, 
     AsyncPipe,
     FormsModule,
     IonHeader,
@@ -42,12 +46,13 @@ import { DataService } from '../core/services/data.service';
 })
 export class Tab2Page implements OnInit {
   private dataService = inject(DataService);
+  private navCtrl = inject (NavController);
 
   tasks$!: Observable<Task[]>;
   newTaskTitle = '';
 
   constructor() {
-    addIcons({ add, trashOutline, checkmarkDoneOutline });
+    addIcons({settingsOutline,add,trashOutline,checkmarkDoneOutline});
   }
 
   ngOnInit() {
@@ -66,6 +71,10 @@ export class Tab2Page implements OnInit {
       isCompleted: false
     });
     this.newTaskTitle = '';
+  }
+
+  irAAjustes() {
+    this.navCtrl.navigateForward('/settings');
   }
 
   /**

@@ -1,5 +1,5 @@
 import { Component, OnInit, inject } from '@angular/core';
-import { AsyncPipe, DatePipe } from '@angular/common';
+import { AsyncPipe } from '@angular/common';
 import {
   IonHeader,
   IonToolbar,
@@ -15,11 +15,13 @@ import {
 } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { addIcons } from 'ionicons';
-import { add, notificationsOutline, calendarOutline } from 'ionicons/icons';
+import { add, notificationsOutline, calendarOutline, settingsOutline } from 'ionicons/icons';
 import { Observable, map } from 'rxjs';
 import { Activity } from '../core/models/activity.model';
 import { DataService } from '../core/services/data.service';
 import { ActivityModalComponent } from './activity-modal.component';
+import { IonButton, IonButtons, NavController } from "@ionic/angular";
+import { RouterModule } from '@angular/router';
 
 type SegmentView = 'dia' | 'semana' | 'mes';
 
@@ -27,9 +29,9 @@ type SegmentView = 'dia' | 'semana' | 'mes';
   selector: 'app-tab1',
   templateUrl: 'tab1.page.html',
   styleUrls: ['tab1.page.scss'],
-  imports: [
+  standalone: true,
+  imports: [IonButtons, IonButton, 
     AsyncPipe,
-    DatePipe,
     FormsModule,
     IonHeader,
     IonToolbar,
@@ -46,6 +48,7 @@ type SegmentView = 'dia' | 'semana' | 'mes';
 export class Tab1Page implements OnInit {
   private dataService = inject(DataService);
   private modalCtrl = inject(ModalController);
+  private navCtrl = inject (NavController);
 
   currentDate = new Date();
   selectedSegment: SegmentView = 'dia';
@@ -53,7 +56,8 @@ export class Tab1Page implements OnInit {
   filteredActivities$!: Observable<Activity[]>;
 
   constructor() {
-    addIcons({ add, notificationsOutline, calendarOutline });
+    addIcons({settingsOutline,notificationsOutline,calendarOutline,add});
+    
   }
 
   ngOnInit() {
@@ -95,6 +99,10 @@ export class Tab1Page implements OnInit {
     const m = String(date.getMonth() + 1).padStart(2, '0');
     const d = String(date.getDate()).padStart(2, '0');
     return `${y}-${m}-${d}`;
+  }
+
+  irAAjustes() {
+    this.navCtrl.navigateForward('/settings');
   }
 
   private getWeekRange(date: Date): { start: Date; end: Date } {
