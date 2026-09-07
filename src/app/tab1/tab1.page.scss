@@ -126,3 +126,14 @@
 ion-fab-button {
   --box-shadow: 0 6px 16px rgba(56, 128, 255, 0.35);
 }
+
+.date-header {
+  padding: 10px 0;
+  h3 {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: capitalize; /* Para que "septiembre" salga con S mayúscula */
+    color: var(--ion-color-primary); /* Usa el color principal de la app */
+  }
+}

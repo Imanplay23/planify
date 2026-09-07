@@ -1,61 +1,99 @@
 <ion-header [translucent]="true">
+  <!-- Primer Toolbar: Título y Ajustes -->
   <ion-toolbar>
     <ion-title>Mi Agenda</ion-title>
-    <!-- Este es el botón de la tuerca -->
     <ion-buttons slot="end">
       <ion-button (click)="irAAjustes()">
         <ion-icon name="settings-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
   </ion-toolbar>
+
+  <!-- Segundo Toolbar: Fecha actual y Filtro (Día/Semana/Mes) -->
+  <ion-toolbar>
+    <div class="date-header" style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px;">
+      <ion-button fill="clear" (click)="cambiarFecha(-1)">
+        <ion-icon name="chevron-back-outline"></ion-icon>
+      </ion-button>
+      
+      <h3>{{ displayDate }}</h3>
+      
+      <ion-button fill="clear" (click)="cambiarFecha(1)">
+        <ion-icon name="chevron-forward-outline"></ion-icon>
+      </ion-button>
+    </div>
+    
+    <!-- El Segment controla la vista -->
+    <ion-segment [value]="selectedView" (ionChange)="segmentChanged($event)">
+      <ion-segment-button value="day">
+        <ion-label>Día</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="week">
+        <ion-label>Semana</ion-label>
+      </ion-segment-button>
+      <ion-segment-button value="month">
+        <ion-label>Mes</ion-label>
+      </ion-segment-button>
+    </ion-segment>
+  </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Mi Agenda</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <!-- Iteramos sobre los grupos -->
+  @for (grupo of (groupedActivities$ | async); track grupo.fechaTexto) {
+    
+    <!-- Este es el separador de fecha -->
+    <ion-item-divider sticky color="light">
+      <ion-label style="font-weight: bold; text-transform: capitalize;">
+        {{ grupo.fechaTexto | date:'EEEE, d MMMM':'':'es-ES' }}
+      </ion-label>
+    </ion-item-divider>
 
-  <div class="timeline-container">
-    @for (activity of (activities$ | async); track activity.id) {
-      <div class="timeline-item">
-        <!-- Rango de horas a la izquierda -->
-        <div class="timeline-time">
-          <span class="start-time">{{ activity.startTime }}</span>
-          <span class="time-separator">-</span>
-          <span class="end-time">{{ activity.endTime }}</span>
-        </div>
-
-        <!-- Conector y línea de tiempo -->
-        <div class="timeline-axis">
-          <div
-            class="timeline-dot"
-            [style.background-color]="activity.color || 'var(--ion-color-primary)'"
-            [style.box-shadow]="'0 0 0 4px ' + (activity.color ? activity.color + '25' : 'rgba(56, 128, 255, 0.2)')"
-          ></div>
-          <div class="timeline-line"></div>
-        </div>
-
-        <!-- Título y descripción a la derecha -->
-        <div class="timeline-content">
-          <div class="content-header">
-            <h3 class="activity-title">{{ activity.title }}</h3>
-            @if (activity.hasAlert) {
-              <ion-icon name="notifications-outline" class="alert-icon" title="Alerta programada"></ion-icon>
-            }
+    <!-- Aquí iteramos las actividades de ESE día específico -->
+    <div class="timeline-container">
+      @for (activity of grupo.actividades; track activity.id) {
+        
+        <div class="timeline-item">
+          <!-- Rango de horas a la izquierda -->
+          <div class="timeline-time">
+            <span class="start-time">{{ activity.startTime }}</span>
+            <span class="time-separator">-</span>
+            <span class="end-time">{{ activity.endTime }}</span>
           </div>
-          <p class="activity-description">{{ activity.description }}</p>
+
+          <!-- Conector y línea de tiempo -->
+          <div class="timeline-axis">
+            <div
+              class="timeline-dot"
+              [style.background-color]="activity.color || 'var(--ion-color-primary)'"
+              [style.box-shadow]="'0 0 0 4px ' + (activity.color ? activity.color + '25' : 'rgba(56, 128, 255, 0.2)')"
+            ></div>
+            <div class="timeline-line"></div>
+          </div>
+
+          <!-- Título y descripción a la derecha -->
+          <div class="timeline-content">
+            <div class="content-header">
+              <h3 class="activity-title">{{ activity.title }}</h3>
+              @if (activity.hasAlert) {
+                <ion-icon name="notifications-outline" class="alert-icon" title="Alerta programada"></ion-icon>
+              }
+            </div>
+            <p class="activity-description">{{ activity.description }}</p>
+          </div>
         </div>
-      </div>
-    } @empty {
-      <div class="empty-timeline">
-        <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
-        <p class="empty-title">No hay actividades registradas</p>
-        <p class="empty-subtitle">Presiona el botón + para agregar tu primera actividad</p>
-      </div>
-    }
-  </div>
+
+      }
+    </div>
+
+  } @empty {
+    <!-- Mensaje cuando no hay actividades en la fecha seleccionada -->
+    <div class="empty-timeline">
+      <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+      <p class="empty-title">No hay actividades registradas</p>
+      <p class="empty-subtitle">Presiona el botón + para agregar tu primera actividad</p>
+    </div>
+  }
 
   <!-- Botón flotante para agregar actividad -->
   <ion-fab slot="fixed" vertical="bottom" horizontal="end">
