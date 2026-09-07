@@ -1,2 +1,223 @@
-// For information on how to create your own theme, please refer to:
-// https://ionicframework.com/docs/theming/
+// ============================================================================
+// Planify — Sistema de diseño
+// Identidad: "bitácora de agenda" — verde pino como color de marca, fondo
+// gris-verdoso frío (no el crema genérico), serif editorial para fechas
+// grandes, sans moderna para el resto de la interfaz.
+// ============================================================================
+
+:root {
+  // ---- Tipografía ----
+  --planify-font-display: 'Fraunces', Georgia, serif;
+  --planify-font-body: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  --ion-font-family: var(--planify-font-body);
+
+  // ---- Radios (escala deliberada, no un único valor repetido en todo) ----
+  --planify-radius-sm: 8px;
+  --planify-radius-md: 12px;
+  --planify-radius-lg: 20px;
+
+  // ---- Color de marca: verde pino ----
+  --ion-color-primary: #1F6F5C;
+  --ion-color-primary-rgb: 31, 111, 92;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #1b6151;
+  --ion-color-primary-tint: #357d6c;
+
+  // ---- Secundario: verde salvia más claro (chips, estados suaves) ----
+  --ion-color-secondary: #5B8C7B;
+  --ion-color-secondary-rgb: 91, 140, 123;
+  --ion-color-secondary-contrast: #ffffff;
+  --ion-color-secondary-contrast-rgb: 255, 255, 255;
+  --ion-color-secondary-shade: #507b6c;
+  --ion-color-secondary-tint: #6b9888;
+
+  // ---- Terciario: ámbar apagado (usado puntualmente, no como acento genérico) ----
+  --ion-color-tertiary: #B5842A;
+  --ion-color-tertiary-rgb: 181, 132, 42;
+  --ion-color-tertiary-contrast: #ffffff;
+  --ion-color-tertiary-contrast-rgb: 255, 255, 255;
+  --ion-color-tertiary-shade: #9f7425;
+  --ion-color-tertiary-tint: #bd903f;
+
+  // ---- Éxito: verde hierba, distinguible del verde pino de marca ----
+  --ion-color-success: #3E8E52;
+  --ion-color-success-rgb: 62, 142, 82;
+  --ion-color-success-contrast: #ffffff;
+  --ion-color-success-contrast-rgb: 255, 255, 255;
+  --ion-color-success-shade: #367d48;
+  --ion-color-success-tint: #519a63;
+
+  // ---- Alertas / recordatorios: ocre, no el amarillo default de Ionic ----
+  --ion-color-warning: #B5842A;
+  --ion-color-warning-rgb: 181, 132, 42;
+  --ion-color-warning-contrast: #1a1a1a;
+  --ion-color-warning-contrast-rgb: 26, 26, 26;
+  --ion-color-warning-shade: #9f7425;
+  --ion-color-warning-tint: #bd903f;
+
+  // ---- Peligro / eliminar: rojo ladrillo apagado ----
+  --ion-color-danger: #B34141;
+  --ion-color-danger-rgb: 179, 65, 65;
+  --ion-color-danger-contrast: #ffffff;
+  --ion-color-danger-contrast-rgb: 255, 255, 255;
+  --ion-color-danger-shade: #9e3939;
+  --ion-color-danger-tint: #bb5555;
+
+  // ---- Neutros ----
+  --ion-color-medium: #5C6B65;
+  --ion-color-medium-rgb: 92, 107, 101;
+  --ion-color-medium-contrast: #ffffff;
+  --ion-color-medium-contrast-rgb: 255, 255, 255;
+  --ion-color-medium-shade: #515e59;
+  --ion-color-medium-tint: #6c7a75;
+
+  --ion-color-dark: #16241F;
+  --ion-color-dark-rgb: 22, 36, 31;
+  --ion-color-dark-contrast: #ffffff;
+  --ion-color-dark-contrast-rgb: 255, 255, 255;
+  --ion-color-dark-shade: #13201b;
+  --ion-color-dark-tint: #2d3a35;
+
+  --ion-color-light: #EAF1EE;
+  --ion-color-light-rgb: 234, 241, 238;
+  --ion-color-light-contrast: #16241F;
+  --ion-color-light-contrast-rgb: 22, 36, 31;
+  --ion-color-light-shade: #cdd4d1;
+  --ion-color-light-tint: #ebf2ef;
+
+  // ---- Fondo y superficies (modo claro) ----
+  --ion-background-color: #F2F6F4;
+  --ion-background-color-rgb: 242, 246, 244;
+  --ion-text-color: #16241F;
+  --ion-text-color-rgb: 22, 36, 31;
+
+  --ion-toolbar-background: #ffffff;
+  --ion-toolbar-color: #16241F;
+  --ion-item-background: #ffffff;
+  --ion-card-background: #ffffff;
+  --ion-border-color: #DCE4E0;
+
+  --ion-color-step-50: #eef2f0;
+  --ion-color-step-100: #e3e9e6;
+  --ion-color-step-150: #d8dfdb;
+  --ion-color-step-200: #cdd5d1;
+  --ion-color-step-300: #b7c1bc;
+  --ion-color-step-400: #a1ada6;
+  --ion-color-step-500: #8b9991;
+  --ion-color-step-600: #75847c;
+  --ion-color-step-700: #5f6f66;
+  --ion-color-step-800: #495951;
+  --ion-color-step-900: #33443c;
+
+  // ---- Colores disponibles para etiquetar actividades en la agenda ----
+  --planify-activity-blue: #3D6FB4;
+  --planify-activity-violet: #6B5CA5;
+  --planify-activity-pine: #1F6F5C;
+  --planify-activity-grass: #3E8E52;
+  --planify-activity-ochre: #B5842A;
+  --planify-activity-clay: #C1663F;
+  --planify-activity-brick: #B34141;
+  --planify-activity-rose: #B65A87;
+}
+
+// ============================================================================
+// Modo oscuro
+// ============================================================================
+.ion-palette-dark {
+  --ion-color-primary: #4FA98C;
+  --ion-color-primary-rgb: 79, 169, 140;
+  --ion-color-primary-contrast: #05130f;
+  --ion-color-primary-contrast-rgb: 5, 19, 15;
+  --ion-color-primary-shade: #46957b;
+  --ion-color-primary-tint: #61b298;
+
+  --ion-color-secondary: #7FAE9C;
+  --ion-color-secondary-rgb: 127, 174, 156;
+  --ion-color-secondary-contrast: #05130f;
+  --ion-color-secondary-contrast-rgb: 5, 19, 15;
+  --ion-color-secondary-shade: #70998a;
+  --ion-color-secondary-tint: #8cb6a6;
+
+  --ion-color-tertiary: #D9A94F;
+  --ion-color-tertiary-rgb: 217, 169, 79;
+  --ion-color-tertiary-contrast: #1a1400;
+  --ion-color-tertiary-contrast-rgb: 26, 20, 0;
+  --ion-color-tertiary-shade: #bf9546;
+  --ion-color-tertiary-tint: #ddb262;
+
+  --ion-color-success: #5FAE73;
+  --ion-color-success-rgb: 95, 174, 115;
+  --ion-color-success-contrast: #04170a;
+  --ion-color-success-contrast-rgb: 4, 23, 10;
+  --ion-color-success-shade: #549965;
+  --ion-color-success-tint: #70b681;
+
+  --ion-color-warning: #D9A94F;
+  --ion-color-warning-rgb: 217, 169, 79;
+  --ion-color-warning-contrast: #1a1400;
+  --ion-color-warning-contrast-rgb: 26, 20, 0;
+  --ion-color-warning-shade: #bf9546;
+  --ion-color-warning-tint: #ddb262;
+
+  --ion-color-danger: #CC7070;
+  --ion-color-danger-rgb: 204, 112, 112;
+  --ion-color-danger-contrast: #180404;
+  --ion-color-danger-contrast-rgb: 24, 4, 4;
+  --ion-color-danger-shade: #b46363;
+  --ion-color-danger-tint: #d17f7f;
+
+  --ion-color-medium: #9AAAA2;
+  --ion-color-medium-rgb: 154, 170, 162;
+  --ion-color-medium-contrast: #05130f;
+  --ion-color-medium-contrast-rgb: 5, 19, 15;
+  --ion-color-medium-shade: #88968f;
+  --ion-color-medium-tint: #a5b3ac;
+
+  --ion-color-dark: #E7EFEC;
+  --ion-color-dark-rgb: 231, 239, 236;
+  --ion-color-dark-contrast: #16241F;
+  --ion-color-dark-contrast-rgb: 22, 36, 31;
+  --ion-color-dark-shade: #cbd2d0;
+  --ion-color-dark-tint: #e9f0ed;
+
+  --ion-color-light: #1B2622;
+  --ion-color-light-rgb: 27, 38, 34;
+  --ion-color-light-contrast: #E7EFEC;
+  --ion-color-light-contrast-rgb: 231, 239, 236;
+  --ion-color-light-shade: #182420;
+  --ion-color-light-tint: #32403b;
+
+  --ion-background-color: #0F1613;
+  --ion-background-color-rgb: 15, 22, 19;
+  --ion-text-color: #E7EFEC;
+  --ion-text-color-rgb: 231, 239, 236;
+
+  --ion-toolbar-background: #16211D;
+  --ion-toolbar-color: #E7EFEC;
+  --ion-item-background: #16211D;
+  --ion-card-background: #16211D;
+  --ion-border-color: #263029;
+
+  --ion-color-step-50: #182420;
+  --ion-color-step-100: #1e2b26;
+  --ion-color-step-150: #24322c;
+  --ion-color-step-200: #2b3a33;
+  --ion-color-step-300: #3a4b43;
+  --ion-color-step-400: #4a5c53;
+  --ion-color-step-500: #5b6d63;
+  --ion-color-step-600: #748179;
+  --ion-color-step-700: #8d968f;
+  --ion-color-step-800: #a6aca6;
+  --ion-color-step-900: #c0c3bf;
+
+  --planify-activity-blue: #6C93D0;
+  --planify-activity-violet: #9184C8;
+  --planify-activity-pine: #4FA98C;
+  --planify-activity-grass: #5FAE73;
+  --planify-activity-ochre: #D9A94F;
+  --planify-activity-clay: #D68A67;
+  --planify-activity-brick: #CC7070;
+  --planify-activity-rose: #D083A8;
+}

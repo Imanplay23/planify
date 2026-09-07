@@ -113,13 +113,15 @@
             <div
               class="timeline-dot"
               [style.background-color]="activity.color || 'var(--ion-color-primary)'"
-              [style.box-shadow]="'0 0 0 4px ' + (activity.color ? activity.color + '25' : 'rgba(56, 128, 255, 0.2)')"
             ></div>
             <div class="timeline-line"></div>
           </div>
 
           <!-- Título y descripción a la derecha -->
-          <div class="timeline-content">
+          <div
+            class="timeline-content"
+            [style.border-left-color]="activity.color || 'var(--ion-color-primary)'"
+          >
             <div class="content-header">
               <h3 class="activity-title">{{ activity.title }}</h3>
               @if (activity.hasAlert) {

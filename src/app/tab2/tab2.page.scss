@@ -4,15 +4,14 @@
 }
 
 .add-task-item {
-  --background: var(--ion-item-background, var(--ion-card-background, #ffffff));
-  --border-radius: 14px;
+  --background: var(--ion-item-background);
+  --border-radius: var(--planify-radius-md);
   --padding-start: 14px;
   --padding-end: 8px;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.05);
-  border: 1px solid var(--ion-color-step-100, rgba(0, 0, 0, 0.06));
+  border: 1px solid var(--ion-border-color);
 
   ion-button {
-    --border-radius: 10px;
+    --border-radius: var(--planify-radius-sm);
     height: 40px;
     margin-left: 8px;
   }
@@ -26,24 +25,25 @@
 }
 
 .task-item {
-  --background: var(--ion-item-background, var(--ion-card-background, #ffffff));
-  --border-radius: 14px;
+  --background: var(--ion-item-background);
+  --border-radius: var(--planify-radius-md);
   --padding-start: 14px;
   --padding-end: 10px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
-  border: 1px solid var(--ion-color-step-100, rgba(0, 0, 0, 0.05));
-  transition: opacity 0.2s ease, transform 0.15s ease;
+  margin-bottom: 10px;
+  border: 1px solid var(--ion-border-color);
+  transition: opacity 0.2s ease;
 
   ion-checkbox {
     --size: 22px;
     --border-radius: 6px;
+    --checkbox-background-checked: var(--ion-color-primary);
+    --border-color-checked: var(--ion-color-primary);
     margin-right: 14px;
   }
 
   .task-title {
     font-size: 0.98rem;
-    color: var(--ion-text-color, #1f2937);
+    color: var(--ion-text-color);
     font-weight: 500;
     transition: all 0.2s ease;
     white-space: normal;
@@ -58,11 +58,11 @@
 .empty-tasks {
   text-align: center;
   padding: 50px 16px;
-  color: var(--ion-color-step-500, #6b7280);
+  color: var(--ion-color-medium);
 
   .empty-icon {
     font-size: 3.5rem;
-    color: var(--ion-color-success, #2dd36f);
+    color: var(--ion-color-success);
     margin-bottom: 10px;
   }
 
@@ -70,7 +70,7 @@
     font-size: 1.05rem;
     font-weight: 600;
     margin: 0 0 4px;
-    color: var(--ion-text-color, #1f2937);
+    color: var(--ion-text-color);
   }
 
   .empty-subtitle {

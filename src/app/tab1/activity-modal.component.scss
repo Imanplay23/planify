@@ -1,13 +1,12 @@
 .form-item {
-  --background: var(--ion-item-background, var(--ion-card-background, #ffffff));
-  --border-radius: 12px;
+  --background: var(--ion-item-background);
+  --border-radius: var(--planify-radius-md);
   --padding-start: 14px;
   --padding-end: 14px;
   --padding-top: 6px;
   --padding-bottom: 6px;
   margin-bottom: 14px;
-  border: 1px solid var(--ion-color-step-100, rgba(0, 0, 0, 0.06));
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+  border: 1px solid var(--ion-border-color);
 }
 
 .time-row {
@@ -31,7 +30,7 @@
     margin: 0 0 8px;
     font-size: 0.8rem;
     font-weight: 500;
-    color: var(--ion-color-step-600, #4b5563);
+    color: var(--ion-color-medium);
   }
 }
 
@@ -52,11 +51,10 @@
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
   transition: transform 0.1s ease;
 
   &.selected {
-    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ion-color-dark, #222428);
+    box-shadow: 0 0 0 2px var(--ion-background-color), 0 0 0 4px var(--ion-color-dark);
   }
 
   &:active {
