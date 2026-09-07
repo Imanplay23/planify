@@ -24,6 +24,46 @@
   --padding-bottom: 10px;
 }
 
+.color-picker-item {
+  padding: 4px 14px 12px;
+
+  .color-picker-label {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ion-color-step-600, #4b5563);
+  }
+}
+
+.color-swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.color-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+  transition: transform 0.1s ease;
+
+  &.selected {
+    box-shadow: 0 0 0 2px #fff, 0 0 0 4px var(--ion-color-dark, #222428);
+  }
+
+  &:active {
+    transform: scale(0.92);
+  }
+}
+
 ion-spinner {
   width: 20px;
   height: 20px;

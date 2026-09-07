@@ -21,8 +21,10 @@ export class NotificationService {
 
   /**
    * Programa una alerta local para la actividad en su fecha y hora programada.
+   * Devuelve el id de la notificación programada, para poder cancelarla o
+   * reprogramarla más adelante si la actividad se edita o elimina.
    */
-  async scheduleActivityNotification(activity: Activity): Promise<void> {
+  async scheduleActivityNotification(activity: Activity): Promise<number | undefined> {
     try {
       // Combinar activity.date (YYYY-MM-DD) y activity.startTime (HH:mm)
       const dateParts = activity.date.split('-');
@@ -59,8 +61,23 @@ export class NotificationService {
       });
 
       console.log(`Notificación programada exitosamente para "${activity.title}" a las ${targetDate.toLocaleString()}`);
+      return notificationId;
     } catch (error) {
       console.error('Error al programar la notificación local:', error);
+      return undefined;
+    }
+  }
+
+  /**
+   * Cancela una notificación local previamente programada (por ejemplo, al
+   * editar una actividad y desactivar su alerta, o al eliminarla).
+   */
+  async cancelNotification(notificationId?: number): Promise<void> {
+    if (!notificationId) return;
+    try {
+      await LocalNotifications.cancel({ notifications: [{ id: notificationId }] });
+    } catch (error) {
+      console.warn('Error al cancelar la notificación local:', error);
     }
   }
 }

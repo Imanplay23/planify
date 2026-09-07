@@ -11,18 +11,18 @@
 
   <!-- Segundo Toolbar: Fecha actual y Filtro (Día/Semana/Mes) -->
   <ion-toolbar>
-    <div class="date-header" style="display: flex; justify-content: space-between; align-items: center; padding: 0 10px;">
-      <ion-button fill="clear" (click)="cambiarFecha(-1)">
+    <div class="date-header">
+      <ion-button fill="clear" (click)="cambiarFecha(-1)" aria-label="Anterior">
         <ion-icon name="chevron-back-outline"></ion-icon>
       </ion-button>
-      
+
       <h3>{{ displayDate }}</h3>
-      
-      <ion-button fill="clear" (click)="cambiarFecha(1)">
+
+      <ion-button fill="clear" (click)="cambiarFecha(1)" aria-label="Siguiente">
         <ion-icon name="chevron-forward-outline"></ion-icon>
       </ion-button>
     </div>
-    
+
     <!-- El Segment controla la vista -->
     <ion-segment [value]="selectedView" (ionChange)="segmentChanged($event)">
       <ion-segment-button value="day">
@@ -39,21 +39,68 @@
 </ion-header>
 
 <ion-content>
-  <!-- Iteramos sobre los grupos -->
-  @for (grupo of (groupedActivities$ | async); track grupo.fechaTexto) {
-    
-    <!-- Este es el separador de fecha -->
-    <ion-item-divider sticky color="light">
-      <ion-label style="font-weight: bold; text-transform: capitalize;">
-        {{ grupo.fechaTexto | date:'EEEE, d MMMM':'':'es-ES' }}
-      </ion-label>
-    </ion-item-divider>
+  @if (viewData$ | async; as viewData) {
 
-    <!-- Aquí iteramos las actividades de ESE día específico -->
+    <!-- ===== VISTA MES: cuadrícula de calendario real ===== -->
+    @if (viewData.view === 'month' && viewData.monthGrid) {
+      <div class="calendar-grid month-grid">
+        <div class="grid-weekday-row">
+          @for (wd of weekdaysShort; track wd) {
+            <div class="grid-weekday">{{ wd }}</div>
+          }
+        </div>
+
+        @for (week of viewData.monthGrid; track $index) {
+          <div class="grid-week-row">
+            @for (cell of week; track cell.dateKey) {
+              <button
+                type="button"
+                class="day-cell"
+                [class.outside-month]="!cell.inCurrentMonth"
+                [class.is-today]="cell.isToday"
+                [class.is-selected]="cell.isSelected"
+                (click)="seleccionarDia(cell)"
+              >
+                <span class="day-number">{{ cell.dayNumber }}</span>
+                @if (cell.hasActivities) {
+                  <span class="day-dot"></span>
+                }
+              </button>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    <!-- ===== VISTA SEMANA: tira de 7 días ===== -->
+    @if (viewData.view === 'week' && viewData.weekStrip) {
+      <div class="calendar-grid week-strip">
+        @for (cell of viewData.weekStrip; track cell.dateKey) {
+          <button
+            type="button"
+            class="day-cell week-cell"
+            [class.is-today]="cell.isToday"
+            [class.is-selected]="cell.isSelected"
+            (click)="seleccionarDia(cell)"
+          >
+            <span class="week-cell-weekday">{{ cell.weekdayShort }}</span>
+            <span class="day-number">{{ cell.dayNumber }}</span>
+            @if (cell.hasActivities) {
+              <span class="day-dot"></span>
+            }
+          </button>
+        }
+      </div>
+    }
+
+    <!-- ===== AGENDA DEL DÍA ENFOCADO (día, o el día elegido en semana/mes) ===== -->
+    <div class="focused-day-header">
+      <h4>{{ viewData.focusedDateLabel }}</h4>
+    </div>
+
     <div class="timeline-container">
-      @for (activity of grupo.actividades; track activity.id) {
-        
-        <div class="timeline-item">
+      @for (activity of viewData.dayActivities; track activity.id) {
+        <div class="timeline-item" (click)="openModal(activity)">
           <!-- Rango de horas a la izquierda -->
           <div class="timeline-time">
             <span class="start-time">{{ activity.startTime }}</span>
@@ -82,17 +129,16 @@
             <p class="activity-description">{{ activity.description }}</p>
           </div>
         </div>
-
+      } @empty {
+        <!-- Mensaje cuando no hay actividades en el día enfocado -->
+        <div class="empty-timeline">
+          <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
+          <p class="empty-title">No hay actividades registradas</p>
+          <p class="empty-subtitle">Presiona el botón + para agregar tu primera actividad</p>
+        </div>
       }
     </div>
 
-  } @empty {
-    <!-- Mensaje cuando no hay actividades en la fecha seleccionada -->
-    <div class="empty-timeline">
-      <ion-icon name="calendar-outline" class="empty-icon"></ion-icon>
-      <p class="empty-title">No hay actividades registradas</p>
-      <p class="empty-subtitle">Presiona el botón + para agregar tu primera actividad</p>
-    </div>
   }
 
   <!-- Botón flotante para agregar actividad -->

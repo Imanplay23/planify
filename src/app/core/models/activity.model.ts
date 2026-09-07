@@ -7,4 +7,5 @@ export interface Activity {
   endTime: string;
   hasAlert: boolean;
   color?: string;
+  notificationId?: number;
 }

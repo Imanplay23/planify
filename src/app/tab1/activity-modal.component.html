@@ -5,9 +5,18 @@
         Cancelar
       </ion-button>
     </ion-buttons>
-    <ion-title>Nueva Actividad</ion-title>
+    <ion-title>{{ isEditMode ? 'Editar Actividad' : 'Nueva Actividad' }}</ion-title>
     <ion-buttons slot="end">
-      <ion-button (click)="save()" [disabled]="activityForm.invalid || isLoading" [strong]="true" color="primary">
+      @if (isEditMode) {
+        <ion-button (click)="confirmDelete()" [disabled]="isLoading || isDeleting" color="danger">
+          @if (isDeleting) {
+            <ion-spinner name="crescent"></ion-spinner>
+          } @else {
+            <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+          }
+        </ion-button>
+      }
+      <ion-button (click)="save()" [disabled]="activityForm.invalid || isLoading || isDeleting" [strong]="true" color="primary">
         @if (isLoading) {
           <ion-spinner name="crescent"></ion-spinner>
         } @else {
@@ -74,6 +83,27 @@
           rows="3"
         ></ion-textarea>
       </ion-item>
+
+      <!-- Selector de color -->
+      <div class="color-picker-item form-item">
+        <p class="color-picker-label">Color</p>
+        <div class="color-swatch-row">
+          @for (color of colorOptions; track color) {
+            <button
+              type="button"
+              class="color-swatch"
+              [style.background-color]="color"
+              [class.selected]="activityForm.get('color')?.value === color"
+              (click)="seleccionarColor(color)"
+              [attr.aria-label]="'Elegir color ' + color"
+            >
+              @if (activityForm.get('color')?.value === color) {
+                <ion-icon name="checkmark-outline"></ion-icon>
+              }
+            </button>
+          }
+        </div>
+      </div>
 
       <!-- Alerta / Notificación -->
       <ion-item class="form-item toggle-item">
