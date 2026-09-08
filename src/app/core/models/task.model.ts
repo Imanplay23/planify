@@ -2,6 +2,7 @@ export type TaskPriority = 'alta' | 'media' | 'baja';
 
 export interface Task {
   id?: string;
+  userId?: string;
   title: string;
   isCompleted: boolean;
   dueDate?: string;      // 'YYYY-MM-DD'

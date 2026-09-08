@@ -14,10 +14,12 @@ import {
   IonButton,
   AlertController
 } from '@ionic/angular';
+import { Router } from '@angular/router';
 import { addIcons } from 'ionicons';
-import { moonOutline, trashOutline, add, listOutline } from 'ionicons/icons';
+import { moonOutline, trashOutline, add, listOutline, logOutOutline } from 'ionicons/icons';
 import { Observable } from 'rxjs';
 import { DataService } from '../core/services/data.service';
+import { AuthService } from '../core/services/auth.service';
 import { TaskList } from '../core/models/task-list.model';
 import { BRAND_COLORS } from '../core/constants/colors';
 
@@ -47,13 +49,16 @@ import { BRAND_COLORS } from '../core/constants/colors';
 export class SettingsPage implements OnInit {
   private dataService = inject(DataService);
   private alertCtrl = inject(AlertController);
+  private router = inject(Router);
+
+  authService = inject(AuthService);
 
   isDarkMode = false;
   newListName = '';
   taskLists$!: Observable<TaskList[]>;
 
   constructor() {
-    addIcons({ moonOutline, trashOutline, add, listOutline });
+    addIcons({ moonOutline, trashOutline, add, listOutline, logOutOutline });
   }
 
   ngOnInit() {
@@ -99,6 +104,25 @@ export class SettingsPage implements OnInit {
           text: 'Eliminar',
           role: 'destructive',
           handler: () => this.dataService.deleteTaskList(list.id!)
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async confirmLogout() {
+    const alert = await this.alertCtrl.create({
+      header: 'Cerrar sesión',
+      message: '¿Seguro que quieres cerrar sesión?',
+      buttons: [
+        { text: 'Cancelar', role: 'cancel' },
+        {
+          text: 'Cerrar sesión',
+          role: 'destructive',
+          handler: async () => {
+            await this.authService.logout();
+            this.router.navigateByUrl('/login');
+          }
         }
       ]
     });

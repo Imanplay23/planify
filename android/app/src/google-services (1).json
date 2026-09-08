@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "414624219252",
+    "project_id": "planify-5c91a",
+    "storage_bucket": "planify-5c91a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:414624219252:android:9cff9cd15dfcdb3ce99121",
+        "android_client_info": {
+          "package_name": "com.imanplay.planify"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDRMSarTycXUMmrOeNQrd_EEZOiDrqz4rY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

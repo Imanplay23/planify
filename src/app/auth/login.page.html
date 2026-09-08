@@ -1,0 +1,62 @@
+<ion-content class="login-content" [fullscreen]="true">
+  <div class="login-wrapper">
+    <div class="login-brand">
+      <ion-icon name="calendar-outline"></ion-icon>
+      <h1>Planify</h1>
+      <p>Tu agenda y tus tareas, en un solo lugar.</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()" class="login-form">
+      @if (mode === 'register') {
+        <ion-item class="form-item">
+          <ion-input
+            label="Nombre"
+            labelPlacement="stacked"
+            placeholder="¿Cómo te llamas?"
+            formControlName="displayName"
+            [clearInput]="true"
+          ></ion-input>
+        </ion-item>
+      }
+
+      <ion-item class="form-item">
+        <ion-input
+          label="Correo"
+          labelPlacement="stacked"
+          type="email"
+          placeholder="tucorreo@ejemplo.com"
+          formControlName="email"
+          [clearInput]="true"
+          autocomplete="email"
+        ></ion-input>
+      </ion-item>
+
+      <ion-item class="form-item">
+        <ion-input
+          label="Contraseña"
+          labelPlacement="stacked"
+          type="password"
+          placeholder="Mínimo 6 caracteres"
+          formControlName="password"
+          autocomplete="current-password"
+        ></ion-input>
+      </ion-item>
+
+      @if (errorMessage) {
+        <p class="error-text">{{ errorMessage }}</p>
+      }
+
+      <ion-button expand="block" type="submit" [disabled]="form.invalid || isLoading" color="primary">
+        @if (isLoading) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          {{ mode === 'login' ? 'Iniciar sesión' : 'Crear cuenta' }}
+        }
+      </ion-button>
+    </form>
+
+    <button type="button" class="toggle-mode" (click)="toggleMode()">
+      {{ mode === 'login' ? '¿No tienes cuenta? Crear una' : '¿Ya tienes cuenta? Inicia sesión' }}
+    </button>
+  </div>
+</ion-content>

@@ -9,6 +9,18 @@
 
 <ion-content [fullscreen]="true">
   <ion-list class="settings-list" lines="none">
+    @if ((authService.user$ | async); as user) {
+      <ion-item class="settings-item">
+        <ion-label>
+          <p class="account-email">{{ user.email }}</p>
+        </ion-label>
+        <ion-button slot="end" fill="clear" color="danger" (click)="confirmLogout()">
+          <ion-icon slot="start" name="log-out-outline"></ion-icon>
+          Salir
+        </ion-button>
+      </ion-item>
+    }
+
     <ion-item class="settings-item">
       <ion-icon name="moon-outline" slot="start" color="primary"></ion-icon>
       <ion-label>Modo Oscuro</ion-label>

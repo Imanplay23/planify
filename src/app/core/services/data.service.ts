@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   Firestore,
   collection,
@@ -10,20 +10,21 @@ import {
   deleteDoc,
   DocumentReference,
   query,
-  orderBy
+  where
 } from '@angular/fire/firestore';
-import { Observable } from 'rxjs';
-import { map, tap } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
+import { map, switchMap } from 'rxjs/operators';
 import { Activity } from '../models/activity.model';
 import { Task } from '../models/task.model';
 import { TaskList } from '../models/task-list.model';
+import { AuthService } from './auth.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class DataService {
-  // eslint-disable-next-line @angular-eslint/prefer-inject
-  constructor(private firestore: Firestore) {}
+  private firestore = inject(Firestore);
+  private authService = inject(AuthService);
 
   private get activitiesCollection() {
     return collection(this.firestore, 'activities');
@@ -37,16 +38,32 @@ export class DataService {
     return collection(this.firestore, 'taskLists');
   }
 
+  /**
+   * uid del usuario autenticado, requerido para escribir cualquier documento
+   * (así queda marcado de quién es y las reglas de Firestore pueden exigirlo).
+   */
+  private requireUid(): string {
+    const uid = this.authService.currentUserId;
+    if (!uid) {
+      throw new Error('No hay un usuario autenticado.');
+    }
+    return uid;
+  }
+
   // ==================== ACTIVITIES CRUD ====================
 
   /**
-   * Obtiene todas las actividades en tiempo real ordenadas por hora de inicio.
+   * Obtiene en tiempo real las actividades del usuario autenticado (y solo las
+   * suyas), ordenadas por fecha y hora. Si no hay sesión, emite un array vacío.
    */
   getActivities(): Observable<Activity[]> {
-    const activitiesQuery = query(this.activitiesCollection, orderBy('startTime', 'asc'));
-    return (collectionData(activitiesQuery, { idField: 'id' }) as Observable<Activity[]>).pipe(
-      tap((data) => console.log('Datos de Firestore:', data)),
-      map(activities =>
+    return this.authService.user$.pipe(
+      switchMap((user) => {
+        if (!user) return of([]);
+        const activitiesQuery = query(this.activitiesCollection, where('userId', '==', user.uid));
+        return collectionData(activitiesQuery, { idField: 'id' }) as Observable<Activity[]>;
+      }),
+      map((activities) =>
         [...activities].sort((a, b) => {
           const dateComp = (a.date || '').localeCompare(b.date || '');
           if (dateComp !== 0) return dateComp;
@@ -58,6 +75,7 @@ export class DataService {
 
   /**
    * Obtiene una actividad específica por su ID.
+   * (El acceso real lo controlan las reglas de seguridad de Firestore).
    */
   getActivityById(id: string): Observable<Activity | undefined> {
     const activityDocRef = doc(this.firestore, `activities/${id}`);
@@ -65,10 +83,10 @@ export class DataService {
   }
 
   /**
-   * Agrega una nueva actividad a Firestore.
+   * Agrega una nueva actividad a Firestore, marcada con el uid del usuario actual.
    */
   addActivity(activity: Omit<Activity, 'id'>): Promise<DocumentReference> {
-    return addDoc(this.activitiesCollection, activity);
+    return addDoc(this.activitiesCollection, { ...activity, userId: this.requireUid() });
   }
 
   /**
@@ -92,14 +110,18 @@ export class DataService {
   // ==================== TASKS CRUD ====================
 
   /**
-   * Obtiene todas las tareas en tiempo real ordenadas por fecha de creación (más recientes primero).
+   * Obtiene en tiempo real las tareas del usuario autenticado, ordenadas por
+   * fecha de creación (más recientes primero). Si no hay sesión, emite [].
    */
   getTasks(): Observable<Task[]> {
-    return (collectionData(this.tasksCollection, { idField: 'id' }) as Observable<Task[]>).pipe(
-      map(tasks =>
-        [...tasks].sort((a, b) =>
-          (b.createdAt || '').localeCompare(a.createdAt || '')
-        )
+    return this.authService.user$.pipe(
+      switchMap((user) => {
+        if (!user) return of([]);
+        const tasksQuery = query(this.tasksCollection, where('userId', '==', user.uid));
+        return collectionData(tasksQuery, { idField: 'id' }) as Observable<Task[]>;
+      }),
+      map((tasks) =>
+        [...tasks].sort((a, b) => (b.createdAt || '').localeCompare(a.createdAt || ''))
       )
     );
   }
@@ -113,14 +135,16 @@ export class DataService {
   }
 
   /**
-   * Agrega una nueva tarea a Firestore con fecha de creación automática si no se provee.
+   * Agrega una nueva tarea a Firestore con fecha de creación automática si no
+   * se provee, marcada con el uid del usuario actual.
    */
   addTask(task: Omit<Task, 'id'> | Task): Promise<DocumentReference> {
     const taskData: Omit<Task, 'id'> = {
       title: task.title,
       isCompleted: Boolean(task.isCompleted),
-      createdAt: task.createdAt || new Date().toISOString()
-    };
+      createdAt: task.createdAt || new Date().toISOString(),
+      userId: this.requireUid()
+    } as Omit<Task, 'id'>;
     if (task.dueDate) taskData.dueDate = task.dueDate;
     if (task.dueTime) taskData.dueTime = task.dueTime;
     if (task.listId) taskData.listId = task.listId;
@@ -152,19 +176,25 @@ export class DataService {
   // ==================== TASK LISTS (categorías) CRUD ====================
 
   /**
-   * Obtiene todas las listas/categorías de tareas, ordenadas por fecha de creación.
+   * Obtiene las listas/categorías del usuario autenticado, ordenadas por
+   * fecha de creación.
    */
   getTaskLists(): Observable<TaskList[]> {
-    return (collectionData(this.taskListsCollection, { idField: 'id' }) as Observable<TaskList[]>).pipe(
-      map(lists => [...lists].sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '')))
+    return this.authService.user$.pipe(
+      switchMap((user) => {
+        if (!user) return of([]);
+        const listsQuery = query(this.taskListsCollection, where('userId', '==', user.uid));
+        return collectionData(listsQuery, { idField: 'id' }) as Observable<TaskList[]>;
+      }),
+      map((lists) => [...lists].sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '')))
     );
   }
 
   /**
-   * Crea una nueva lista/categoría de tareas.
+   * Crea una nueva lista/categoría de tareas, marcada con el uid del usuario actual.
    */
   addTaskList(list: Omit<TaskList, 'id'>): Promise<DocumentReference> {
-    return addDoc(this.taskListsCollection, list);
+    return addDoc(this.taskListsCollection, { ...list, userId: this.requireUid() });
   }
 
   /**
