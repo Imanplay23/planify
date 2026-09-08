@@ -22,19 +22,11 @@ import { trashOutline, checkmarkOutline } from 'ionicons/icons';
 import { DataService } from '../core/services/data.service';
 import { NotificationService } from '../core/services/notification.service';
 import { Activity } from '../core/models/activity.model';
+import { BRAND_COLORS } from '../core/constants/colors';
 
 // Paleta acotada de colores para identificar actividades en la agenda
 // (coincide con los tokens --planify-activity-* de theme/variables.scss)
-export const ACTIVITY_COLORS = [
-  '#1F6F5C', // pino (color de marca)
-  '#3D6FB4', // azul
-  '#6B5CA5', // violeta
-  '#3E8E52', // verde hierba
-  '#B5842A', // ocre
-  '#C1663F', // arcilla
-  '#B34141', // ladrillo
-  '#B65A87', // rosa
-];
+export const ACTIVITY_COLORS = BRAND_COLORS;
 
 @Component({
   selector: 'app-activity-modal',

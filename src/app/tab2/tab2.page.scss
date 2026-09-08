@@ -1,6 +1,6 @@
 .add-task-container {
   max-width: 680px;
-  margin: 10px auto 20px;
+  margin: 10px auto 14px;
 }
 
 .add-task-item {
@@ -17,6 +17,51 @@
   }
 }
 
+// ===== Chips de filtro por lista =====
+.filter-chip-row {
+  max-width: 680px;
+  margin: 0 auto 14px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+.filter-chip {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--ion-border-color);
+  background: var(--ion-item-background);
+  color: var(--ion-text-color);
+  border-radius: 999px;
+  padding: 6px 14px;
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+
+  &.active {
+    background: var(--ion-color-primary);
+    border-color: var(--ion-color-primary);
+    color: var(--ion-color-primary-contrast);
+  }
+}
+
+.chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
 .task-list {
   max-width: 680px;
   margin: 0 auto;
@@ -31,7 +76,6 @@
   --padding-end: 10px;
   margin-bottom: 10px;
   border: 1px solid var(--ion-border-color);
-  transition: opacity 0.2s ease;
 
   ion-checkbox {
     --size: 22px;
@@ -40,19 +84,74 @@
     --border-color-checked: var(--ion-color-primary);
     margin-right: 14px;
   }
+}
 
-  .task-title {
-    font-size: 0.98rem;
-    color: var(--ion-text-color);
-    font-weight: 500;
-    transition: all 0.2s ease;
-    white-space: normal;
+.task-content {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.task-title {
+  display: block;
+  font-size: 0.98rem;
+  color: var(--ion-text-color);
+  font-weight: 500;
+  white-space: normal;
+}
+
+.completed-task {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.task-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.meta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: var(--ion-color-medium);
+  background: var(--ion-color-step-50);
+  border-radius: 999px;
+  padding: 3px 9px;
+
+  &.overdue {
+    color: var(--ion-color-danger);
+    background: rgba(179, 65, 65, 0.1);
+  }
+}
+
+.priority-badge {
+  text-transform: capitalize;
+
+  &.priority-alta {
+    color: var(--ion-color-danger);
+    background: rgba(179, 65, 65, 0.1);
   }
 
-  .completed-task {
-    text-decoration: line-through;
-    opacity: 0.6;
+  &.priority-media {
+    color: var(--ion-color-warning-shade, var(--ion-color-warning));
+    background: rgba(181, 132, 42, 0.12);
   }
+
+  &.priority-baja {
+    color: var(--ion-color-medium);
+  }
+}
+
+.task-alert-icon {
+  font-size: 0.9rem;
+  color: var(--ion-color-warning);
 }
 
 .empty-tasks {

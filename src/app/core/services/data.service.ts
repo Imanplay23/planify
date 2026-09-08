@@ -16,6 +16,7 @@ import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
 import { Activity } from '../models/activity.model';
 import { Task } from '../models/task.model';
+import { TaskList } from '../models/task-list.model';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,10 @@ export class DataService {
 
   private get tasksCollection() {
     return collection(this.firestore, 'tasks');
+  }
+
+  private get taskListsCollection() {
+    return collection(this.firestore, 'taskLists');
   }
 
   // ==================== ACTIVITIES CRUD ====================
@@ -117,7 +122,11 @@ export class DataService {
       createdAt: task.createdAt || new Date().toISOString()
     };
     if (task.dueDate) taskData.dueDate = task.dueDate;
+    if (task.dueTime) taskData.dueTime = task.dueTime;
     if (task.listId) taskData.listId = task.listId;
+    if (task.priority) taskData.priority = task.priority;
+    if (task.hasAlert) taskData.hasAlert = task.hasAlert;
+    if (task.notificationId) taskData.notificationId = task.notificationId;
 
     return addDoc(this.tasksCollection, taskData);
   }
@@ -125,7 +134,7 @@ export class DataService {
   /**
    * Actualiza una tarea existente (ej. alternar isCompleted o editar título).
    */
-  updateTask(id: string, data: any): Promise<void> {
+  updateTask(id: string, data: Partial<Task>): Promise<void> {
     const taskDocRef = doc(this.firestore, `tasks/${id}`);
     const dataToUpdate = { ...data };
     delete dataToUpdate.id;
@@ -138,5 +147,32 @@ export class DataService {
   deleteTask(id: string): Promise<void> {
     const taskDocRef = doc(this.firestore, `tasks/${id}`);
     return deleteDoc(taskDocRef);
+  }
+
+  // ==================== TASK LISTS (categorías) CRUD ====================
+
+  /**
+   * Obtiene todas las listas/categorías de tareas, ordenadas por fecha de creación.
+   */
+  getTaskLists(): Observable<TaskList[]> {
+    return (collectionData(this.taskListsCollection, { idField: 'id' }) as Observable<TaskList[]>).pipe(
+      map(lists => [...lists].sort((a, b) => (a.createdAt || '').localeCompare(b.createdAt || '')))
+    );
+  }
+
+  /**
+   * Crea una nueva lista/categoría de tareas.
+   */
+  addTaskList(list: Omit<TaskList, 'id'>): Promise<DocumentReference> {
+    return addDoc(this.taskListsCollection, list);
+  }
+
+  /**
+   * Elimina una lista/categoría. Las tareas que la tenían asignada conservan
+   * su listId (quedan "huérfanas" y se agrupan como tareas sin lista al filtrar).
+   */
+  deleteTaskList(id: string): Promise<void> {
+    const listDocRef = doc(this.firestore, `taskLists/${id}`);
+    return deleteDoc(listDocRef);
   }
 }

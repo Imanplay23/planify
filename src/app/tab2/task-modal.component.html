@@ -1,0 +1,116 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="cancel()" color="medium">
+        Cancelar
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Editar Tarea</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="confirmDelete()" [disabled]="isLoading || isDeleting" color="danger">
+        @if (isDeleting) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+        }
+      </ion-button>
+      <ion-button (click)="save()" [disabled]="taskForm.invalid || isLoading || isDeleting" [strong]="true" color="primary">
+        @if (isLoading) {
+          <ion-spinner name="crescent"></ion-spinner>
+        } @else {
+          Guardar
+        }
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <form [formGroup]="taskForm" (ngSubmit)="save()">
+    <ion-list lines="none">
+      <!-- Título -->
+      <ion-item class="form-item">
+        <ion-input
+          label="Título *"
+          labelPlacement="stacked"
+          placeholder="Ej: Entregar informe"
+          formControlName="title"
+          [clearInput]="true"
+        ></ion-input>
+      </ion-item>
+
+      <!-- Lista / categoría -->
+      <ion-item class="form-item">
+        <ion-select
+          label="Lista"
+          labelPlacement="stacked"
+          placeholder="Sin lista"
+          formControlName="listId"
+          interface="popover"
+        >
+          <ion-select-option value="">Sin lista</ion-select-option>
+          @for (list of (taskLists$ | async); track list.id) {
+            <ion-select-option [value]="list.id">{{ list.name }}</ion-select-option>
+          }
+        </ion-select>
+      </ion-item>
+
+      <!-- Fecha límite -->
+      <ion-item class="form-item">
+        <ion-input
+          label="Fecha límite (opcional)"
+          labelPlacement="stacked"
+          type="date"
+          formControlName="dueDate"
+        ></ion-input>
+        @if (taskForm.get('dueDate')?.value) {
+          <ion-button slot="end" fill="clear" size="small" (click)="quitarFecha()">
+            Quitar
+          </ion-button>
+        }
+      </ion-item>
+
+      <!-- Hora límite (solo si hay fecha) -->
+      @if (taskForm.get('dueDate')?.value) {
+        <ion-item class="form-item">
+          <ion-input
+            label="Hora (opcional)"
+            labelPlacement="stacked"
+            type="time"
+            formControlName="dueTime"
+          ></ion-input>
+        </ion-item>
+      }
+
+      <!-- Prioridad -->
+      <div class="priority-picker form-item">
+        <p class="priority-label">Prioridad</p>
+        <ion-segment [value]="taskForm.get('priority')?.value" (ionChange)="seleccionarPrioridad($event.detail.value)">
+          <ion-segment-button value="baja">
+            <ion-label>Baja</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="media">
+            <ion-label>Media</ion-label>
+          </ion-segment-button>
+          <ion-segment-button value="alta">
+            <ion-label>Alta</ion-label>
+          </ion-segment-button>
+        </ion-segment>
+      </div>
+
+      <!-- Alerta / recordatorio (solo si hay fecha límite) -->
+      <ion-item class="form-item toggle-item">
+        <ion-toggle
+          formControlName="hasAlert"
+          [disabled]="!taskForm.get('dueDate')?.value"
+          justify="space-between"
+        >
+          Activar recordatorio / alerta
+        </ion-toggle>
+      </ion-item>
+      @if (!taskForm.get('dueDate')?.value) {
+        <p class="alert-hint">Define una fecha límite para poder activar un recordatorio.</p>
+      }
+    </ion-list>
+  </form>
+</ion-content>

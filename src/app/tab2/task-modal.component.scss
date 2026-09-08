@@ -1,0 +1,37 @@
+.form-item {
+  --background: var(--ion-item-background);
+  --border-radius: var(--planify-radius-md);
+  --padding-start: 14px;
+  --padding-end: 14px;
+  --padding-top: 6px;
+  --padding-bottom: 6px;
+  margin-bottom: 14px;
+  border: 1px solid var(--ion-border-color);
+}
+
+.toggle-item {
+  --padding-top: 10px;
+  --padding-bottom: 10px;
+}
+
+.priority-picker {
+  padding: 4px 14px 12px;
+
+  .priority-label {
+    margin: 0 0 8px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--ion-color-medium);
+  }
+}
+
+.alert-hint {
+  margin: -6px 14px 14px;
+  font-size: 0.78rem;
+  color: var(--ion-color-medium);
+}
+
+ion-spinner {
+  width: 20px;
+  height: 20px;
+}

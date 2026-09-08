@@ -1,5 +1,41 @@
 // ===== Cuadrícula de calendario (vistas Mes / Semana) =====
 
+// ===== Layout general de la Agenda =====
+// Por defecto (celular): todo apilado, como hasta ahora.
+// Desde tablet (>=768px) y solo en vista Mes: calendario a la izquierda,
+// agenda del día seleccionado a la derecha — como Google Calendar en escritorio.
+.agenda-body {
+  display: block;
+}
+
+.agenda-panel {
+  min-width: 0;
+}
+
+@media (min-width: 768px) {
+  .agenda-body.month-body {
+    display: flex;
+    align-items: flex-start;
+    gap: 4px;
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 0 8px;
+  }
+
+  .agenda-body.month-body .calendar-grid.month-grid {
+    flex: 0 0 340px;
+    max-width: 340px;
+    margin: 0;
+    position: sticky;
+    top: 10px;
+    padding-top: 14px;
+  }
+
+  .agenda-body.month-body .agenda-panel {
+    flex: 1;
+  }
+}
+
 .calendar-grid {
   max-width: 680px;
   margin: 0 auto;

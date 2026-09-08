@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { LocalNotifications, PermissionStatus } from '@capacitor/local-notifications';
 import { Activity } from '../models/activity.model';
+import { Task } from '../models/task.model';
 
 @Injectable({
   providedIn: 'root'
@@ -25,10 +26,41 @@ export class NotificationService {
    * reprogramarla más adelante si la actividad se edita o elimina.
    */
   async scheduleActivityNotification(activity: Activity): Promise<number | undefined> {
+    return this.scheduleNotification({
+      date: activity.date,
+      time: activity.startTime,
+      title: `Recordatorio: ${activity.title}`,
+      body: activity.description || '¡Tienes una actividad programada en tu agenda!'
+    });
+  }
+
+  /**
+   * Programa una alerta local para una tarea con fecha límite. Si la tarea no
+   * tiene hora definida (dueTime), usa las 09:00 del día de la fecha límite.
+   */
+  async scheduleTaskNotification(task: Task): Promise<number | undefined> {
+    if (!task.dueDate) return undefined;
+    return this.scheduleNotification({
+      date: task.dueDate,
+      time: task.dueTime || '09:00',
+      title: `Tarea pendiente: ${task.title}`,
+      body: 'Se acerca la fecha límite de esta tarea.'
+    });
+  }
+
+  /**
+   * Lógica compartida de programación: combina una fecha (YYYY-MM-DD) y hora
+   * (HH:mm), genera un id válido para Capacitor y programa la notificación.
+   */
+  private async scheduleNotification(params: {
+    date: string;
+    time: string;
+    title: string;
+    body: string;
+  }): Promise<number | undefined> {
     try {
-      // Combinar activity.date (YYYY-MM-DD) y activity.startTime (HH:mm)
-      const dateParts = activity.date.split('-');
-      const timeParts = activity.startTime.split(':');
+      const dateParts = params.date.split('-');
+      const timeParts = params.time.split(':');
 
       const year = parseInt(dateParts[0], 10);
       const month = parseInt(dateParts[1], 10) - 1; // Mes indexado en 0
@@ -50,8 +82,8 @@ export class NotificationService {
         notifications: [
           {
             id: notificationId,
-            title: `Recordatorio: ${activity.title}`,
-            body: activity.description || '¡Tienes una actividad programada en tu agenda!',
+            title: params.title,
+            body: params.body,
             schedule: {
               at: targetDate,
               allowWhileIdle: true
@@ -60,7 +92,7 @@ export class NotificationService {
         ]
       });
 
-      console.log(`Notificación programada exitosamente para "${activity.title}" a las ${targetDate.toLocaleString()}`);
+      console.log(`Notificación programada exitosamente: "${params.title}" a las ${targetDate.toLocaleString()}`);
       return notificationId;
     } catch (error) {
       console.error('Error al programar la notificación local:', error);
@@ -70,7 +102,7 @@ export class NotificationService {
 
   /**
    * Cancela una notificación local previamente programada (por ejemplo, al
-   * editar una actividad y desactivar su alerta, o al eliminarla).
+   * editar una actividad/tarea y desactivar su alerta, o al eliminarla).
    */
   async cancelNotification(notificationId?: number): Promise<void> {
     if (!notificationId) return;

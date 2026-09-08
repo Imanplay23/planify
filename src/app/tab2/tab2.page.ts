@@ -13,22 +13,38 @@ import {
   IonIcon,
   IonCheckbox,
   IonLabel,
+  IonButtons,
+  ModalController,
   NavController
 } from '@ionic/angular';
 import { addIcons } from 'ionicons';
-import { add, trashOutline, checkmarkDoneOutline, settingsOutline } from 'ionicons/icons';
-import { Observable } from 'rxjs';
+import { add, checkmarkDoneOutline, settingsOutline } from 'ionicons/icons';
+import { BehaviorSubject, Observable, combineLatest } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { Task } from '../core/models/task.model';
+import { TaskList } from '../core/models/task-list.model';
 import { DataService } from '../core/services/data.service';
-import { IonButtons } from "@ionic/angular";
-import { RouterModule } from '@angular/router';
+import { TaskModalComponent } from './task-modal.component';
+
+export interface TaskViewModel extends Task {
+  listColor?: string;
+  listName?: string;
+  isOverdue: boolean;
+}
+
+interface TasksViewData {
+  tasks: TaskViewModel[];
+  lists: TaskList[];
+  filter: string;
+}
 
 @Component({
   selector: 'app-tab2',
   templateUrl: 'tab2.page.html',
   styleUrls: ['tab2.page.scss'],
   standalone: true,
-  imports: [IonButtons, 
+  imports: [
+    IonButtons,
     AsyncPipe,
     FormsModule,
     IonHeader,
@@ -46,21 +62,60 @@ import { RouterModule } from '@angular/router';
 })
 export class Tab2Page implements OnInit {
   private dataService = inject(DataService);
-  private navCtrl = inject (NavController);
+  private modalCtrl = inject(ModalController);
+  private navCtrl = inject(NavController);
 
-  tasks$!: Observable<Task[]>;
   newTaskTitle = '';
+  private filterSubject = new BehaviorSubject<string>('all');
+  viewData$!: Observable<TasksViewData>;
 
   constructor() {
-    addIcons({settingsOutline,add,trashOutline,checkmarkDoneOutline});
+    addIcons({ settingsOutline, add, checkmarkDoneOutline });
   }
 
   ngOnInit() {
-    this.tasks$ = this.dataService.getTasks();
+    this.viewData$ = combineLatest([
+      this.dataService.getTasks(),
+      this.dataService.getTaskLists(),
+      this.filterSubject
+    ]).pipe(
+      map(([tasks, lists, filter]) => {
+        const todayKey = this.todayKey();
+        const withMeta: TaskViewModel[] = tasks.map((t) => ({
+          ...t,
+          listColor: t.listId ? lists.find((l) => l.id === t.listId)?.color : undefined,
+          listName: t.listId ? lists.find((l) => l.id === t.listId)?.name : undefined,
+          isOverdue: !!t.dueDate && !t.isCompleted && t.dueDate < todayKey
+        }));
+
+        const filtered =
+          filter === 'all'
+            ? withMeta
+            : filter === 'none'
+              ? withMeta.filter((t) => !t.listId)
+              : withMeta.filter((t) => t.listId === filter);
+
+        return { tasks: filtered, lists, filter };
+      })
+    );
+  }
+
+  setFilter(value: string) {
+    this.filterSubject.next(value);
+  }
+
+  private todayKey(): string {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = (now.getMonth() + 1).toString().padStart(2, '0');
+    const d = now.getDate().toString().padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
 
   /**
    * Agrega una nueva tarea a Firestore y limpia el campo de texto.
+   * La creación rápida solo captura el título; el resto (fecha, lista,
+   * prioridad, alerta) se agrega editando la tarea después.
    */
   async addNewTask() {
     const title = this.newTaskTitle.trim();
@@ -88,10 +143,14 @@ export class Tab2Page implements OnInit {
   }
 
   /**
-   * Elimina una tarea por su ID.
+   * Abre el modal de edición completa de la tarea (fecha, lista, prioridad,
+   * alerta, y la opción de eliminarla).
    */
-  async deleteTask(id?: string) {
-    if (!id) return;
-    await this.dataService.deleteTask(id);
+  async openTaskModal(task: Task) {
+    const modal = await this.modalCtrl.create({
+      component: TaskModalComponent,
+      componentProps: { task }
+    });
+    await modal.present();
   }
 }

@@ -39,37 +39,88 @@
     </ion-item>
   </div>
 
-  <!-- Lista de tareas -->
-  <ion-list lines="none" class="task-list">
-    @for (task of (tasks$ | async); track task.id) {
-      <ion-item class="task-item">
-        <ion-checkbox
-          slot="start"
-          [checked]="task.isCompleted"
-          (ionChange)="toggleCompletion(task)"
-          aria-label="Marcar como completada"
-        ></ion-checkbox>
+  @if (viewData$ | async; as viewData) {
 
-        <ion-label [class.completed-task]="task.isCompleted" class="task-title">
-          {{ task.title }}
-        </ion-label>
-
-        <ion-button
-          slot="end"
-          fill="clear"
-          color="danger"
-          (click)="deleteTask(task.id)"
-          aria-label="Eliminar tarea"
+    <!-- Chips de filtro por lista -->
+    @if (viewData.lists.length > 0) {
+      <div class="filter-chip-row">
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="viewData.filter === 'all'"
+          (click)="setFilter('all')"
         >
-          <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
-        </ion-button>
-      </ion-item>
-    } @empty {
-      <div class="empty-tasks">
-        <ion-icon name="checkmark-done-outline" class="empty-icon"></ion-icon>
-        <p class="empty-title">¡Todo al día!</p>
-        <p class="empty-subtitle">No tienes tareas pendientes por realizar</p>
+          Todas
+        </button>
+        <button
+          type="button"
+          class="filter-chip"
+          [class.active]="viewData.filter === 'none'"
+          (click)="setFilter('none')"
+        >
+          Sin lista
+        </button>
+        @for (list of viewData.lists; track list.id) {
+          <button
+            type="button"
+            class="filter-chip"
+            [class.active]="viewData.filter === list.id"
+            (click)="setFilter(list.id!)"
+          >
+            <span class="chip-dot" [style.background-color]="list.color"></span>
+            {{ list.name }}
+          </button>
+        }
       </div>
     }
-  </ion-list>
+
+    <!-- Lista de tareas -->
+    <ion-list lines="none" class="task-list">
+      @for (task of viewData.tasks; track task.id) {
+        <ion-item class="task-item">
+          <ion-checkbox
+            slot="start"
+            [checked]="task.isCompleted"
+            (ionChange)="toggleCompletion(task)"
+            aria-label="Marcar como completada"
+          ></ion-checkbox>
+
+          <div class="task-content" (click)="openTaskModal(task)">
+            <ion-label [class.completed-task]="task.isCompleted" class="task-title">
+              {{ task.title }}
+            </ion-label>
+
+            <div class="task-meta">
+              @if (task.listColor) {
+                <span class="meta-badge list-badge">
+                  <span class="chip-dot" [style.background-color]="task.listColor"></span>
+                  {{ task.listName }}
+                </span>
+              }
+              @if (task.dueDate) {
+                <span class="meta-badge" [class.overdue]="task.isOverdue">
+                  {{ task.dueDate }}{{ task.dueTime ? ' · ' + task.dueTime : '' }}
+                </span>
+              }
+              @if (task.priority) {
+                <span class="meta-badge priority-badge" [class]="'priority-' + task.priority">
+                  {{ task.priority }}
+                </span>
+              }
+              @if (task.hasAlert) {
+                <ion-icon name="notifications-outline" class="task-alert-icon"></ion-icon>
+              }
+            </div>
+          </div>
+        </ion-item>
+      } @empty {
+        <div class="empty-tasks">
+          <ion-icon name="checkmark-done-outline" class="empty-icon"></ion-icon>
+          <p class="empty-title">¡Todo al día!</p>
+          <p class="empty-subtitle">No tienes tareas pendientes por realizar</p>
+        </div>
+      }
+    </ion-list>
+
+  }
 </ion-content>

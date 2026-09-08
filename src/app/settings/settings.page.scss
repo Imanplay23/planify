@@ -12,6 +12,49 @@
   margin-bottom: 10px;
 }
 
+.settings-section {
+  max-width: 680px;
+  margin: 24px auto 0;
+  padding: 0 16px;
+}
+
+.section-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--ion-text-color);
+  margin: 0 0 10px;
+}
+
+.add-list-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+
+  .add-list-input {
+    flex: 1;
+  }
+}
+
+.list-item {
+  .list-color-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 12px;
+    flex-shrink: 0;
+  }
+}
+
+.empty-lists-hint {
+  font-size: 0.82rem;
+  color: var(--ion-color-medium);
+  padding: 4px 4px 12px;
+}
+
 .settings-footnote {
   text-align: center;
   font-family: var(--planify-font-display);

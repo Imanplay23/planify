@@ -16,5 +16,52 @@
     </ion-item>
   </ion-list>
 
+  @if (taskLists$ | async; as taskLists) {
+    <div class="settings-section">
+      <h4 class="section-title">
+        <ion-icon name="list-outline" color="primary"></ion-icon>
+        Listas de tareas
+      </h4>
+
+      <div class="add-list-row">
+        <ion-input
+          placeholder="Nueva lista (ej: Trabajo)"
+          [(ngModel)]="newListName"
+          (keyup.enter)="addTaskList(taskLists)"
+          [clearInput]="true"
+          fill="outline"
+          class="add-list-input"
+        ></ion-input>
+        <ion-button
+          (click)="addTaskList(taskLists)"
+          [disabled]="!newListName.trim()"
+          color="primary"
+        >
+          <ion-icon slot="icon-only" name="add"></ion-icon>
+        </ion-button>
+      </div>
+
+      <ion-list class="settings-list" lines="none">
+        @for (list of taskLists; track list.id) {
+          <ion-item class="settings-item list-item">
+            <span class="list-color-dot" [style.background-color]="list.color"></span>
+            <ion-label>{{ list.name }}</ion-label>
+            <ion-button
+              slot="end"
+              fill="clear"
+              color="danger"
+              (click)="confirmDeleteList(list)"
+              aria-label="Eliminar lista"
+            >
+              <ion-icon slot="icon-only" name="trash-outline"></ion-icon>
+            </ion-button>
+          </ion-item>
+        } @empty {
+          <p class="empty-lists-hint">Todavía no tienes listas. Crea una arriba para organizar tus tareas por categoría.</p>
+        }
+      </ion-list>
+    </div>
+  }
+
   <p class="settings-footnote">Planify</p>
 </ion-content>
